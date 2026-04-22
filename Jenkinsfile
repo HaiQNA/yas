@@ -5,28 +5,26 @@ pipeline {
         maven 'M3'
     }
     stages {
-        stage('Initial Cleanup') {
+        // Đưa lệnh dọn dẹp lên đầu tiên, trước cả khi tải code (Checkout)
+        stage('Prepare Workspace') {
             steps {
-                // Dọn sạch workspace để tránh kẹt lỗi Malformed POM
                 cleanWs()
+                // Tải lại code sau khi đã dọn dẹp sạch sẽ
+                checkout scm
             }
         }
         stage('Media Service Pipeline') {
-            // Jenkins sẽ chỉ chạy các bước bên dưới nếu có thay đổi trong thư mục media
+            // Jenkins sẽ chạy nếu có thay đổi trong media
             when { changeset "media/**" }
             stages {
                 stage('Test & Coverage') {
                     steps {
                         echo 'Đang chạy Unit Test và đo độ phủ cho Media Service...'
-                        // Chạy test cho media và nạp các thư viện phụ thuộc (common-library)
                         sh 'mvn clean test -pl media -am'
                     }
                     post {
                         always {
-                            // Thu thập kết quả test JUnit
                             junit 'media/target/surefire-reports/*.xml'
-                            
-                            // Thu thập báo cáo độ phủ JaCoCo và hạ ngưỡng về 0 để lấy màu Xanh
                             jacoco(
                                 execPattern: 'media/target/jacoco.exec',
                                 instructionCoverageThreshold: '0', 
