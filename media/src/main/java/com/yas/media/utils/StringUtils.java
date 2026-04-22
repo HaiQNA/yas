@@ -8,3 +8,4 @@ public class StringUtils {
         return input != null && !input.trim().isEmpty();
     }
 }
+
