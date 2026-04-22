@@ -6,22 +6,22 @@ pipeline {
     }
     stages {
         stage('Media Service Pipeline') {
-            // Vẫn giữ tính năng chỉ chạy khi thư mục media có thay đổi (Yêu cầu 6)
-            when { changeset "services/media/**" }
+            // Đã sửa lại đúng tên thư mục là media/**
+            when { changeset "media/**" }
             stages {
                 stage('Test & Coverage') {
                     steps {
                         echo 'Đang chạy Unit Test và đo độ phủ cho Media Service...'
-                        sh 'mvn -f services/media/pom.xml clean test'
+                        // Đã sửa lại đường dẫn pom.xml
+                        sh 'mvn -f media/pom.xml clean test'
                     }
                     post {
                         always {
-                            // Yêu cầu 5: Thu thập kết quả test
-                            junit 'services/media/target/surefire-reports/*.xml'
+                            // Đã sửa lại đường dẫn thư mục target
+                            junit 'media/target/surefire-reports/*.xml'
                             
-                            // Yêu cầu 7b: Cấu hình JaCoCo và chặn ngưỡng 70%
                             jacoco(
-                                execPattern: 'services/media/target/jacoco.exec',
+                                execPattern: 'media/target/jacoco.exec',
                                 instructionCoverageThreshold: '70',
                                 lineCoverageThreshold: '70'
                             )
@@ -31,7 +31,7 @@ pipeline {
                 stage('Build') {
                     steps {
                         echo 'Test Pass! Đang đóng gói Media Service...'
-                        sh 'mvn -f services/media/pom.xml clean package -DskipTests'
+                        sh 'mvn -f media/pom.xml clean package -DskipTests'
                     }
                 }
             }
